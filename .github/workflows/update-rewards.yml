@@ -1,0 +1,40 @@
+name: Update rewards data
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch rewards from pons API
+        run: |
+          TOKEN=0x4b516cf6e96f9ac43207462ea389d820bcfd4dc9
+          BASE="https://www.ponsfamily.com/api/pons-v2-market/$TOKEN"
+          FEES=$(curl -sf "$BASE/creator-fees")
+          DIST=$(curl -sf "$BASE/distributor")
+          if [ -z "$FEES" ] || [ -z "$DIST" ]; then
+            echo "API unreachable, keeping previous data.json"
+            exit 0
+          fi
+          jq -n --argjson fees "$FEES" --argjson dist "$DIST" \
+            '{updatedAt: (now | todate), fees: $fees, dist: $dist}' > data.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "rewards-bot"
+          git config user.email "actions@github.com"
+          git add data.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: update rewards data"
+            git push
+          fi
