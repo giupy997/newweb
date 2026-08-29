@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-29T17:13:03Z",
+  "updatedAt": "2026-08-29T19:44:19Z",
   "fees": {
     "token": "0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9",
     "feeEscrow": "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
@@ -10,9 +10,9 @@
       "decimals": 18,
       "isNative": false
     },
-    "earnedForToken": "3570606727074251296",
-    "claimableForWallet": "947333320585690345",
-    "sweepCount": 19,
+    "earnedForToken": "6028955635033935130",
+    "claimableForWallet": "3343512105708604080",
+    "sweepCount": 49,
     "nothingToClaim": false
   },
   "dist": {
