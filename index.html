@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$AGI — Amphibian Giga Intelligence</title>
+<meta name="description" content="$AGI — Amphibian Giga Intelligence. Creator fees route to AGI holders. Rewards paid in NVDA.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Ctext x='32' y='42' font-family='monospace' font-size='28' fill='%23fff' text-anchor='middle' font-style='italic'%3EAGI%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#000;
+    --fg:#fff;
+    --dim:#8a8a8a;
+    --faint:#3a3a3a;
+    --mono:"JetBrains Mono","SF Mono","Fira Code","Cascadia Code",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--mono);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--fg);color:var(--bg)}
+
+  /* scanline / crt vibe, very subtle */
+  body::after{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.012) 3px 4px);
+    z-index:99;
+  }
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+  /* ---------- top bar ---------- */
+  header{
+    border-bottom:1px dashed var(--faint);
+    padding:14px 0;
+    position:sticky;top:0;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);
+    z-index:10;
+  }
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{font-weight:700;letter-spacing:.18em;font-style:italic}
+  .brand .slash{color:var(--dim)}
+  .status{font-size:12px;color:var(--dim);letter-spacing:.08em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .dot{width:8px;height:8px;background:var(--fg);display:inline-block;animation:blink 1.2s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- ticker ---------- */
+  .ticker{
+    border-bottom:1px dashed var(--faint);
+    overflow:hidden;white-space:nowrap;
+    font-size:12px;letter-spacing:.15em;color:var(--dim);
+    padding:8px 0;
+    user-select:none;
+  }
+  .ticker-inner{display:inline-block;animation:scroll 30s linear infinite}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .ticker b{color:var(--fg);font-weight:700}
+
+  /* ---------- hero ---------- */
+  .hero{padding:72px 0 40px;text-align:center}
+  .logo-svg{width:min(640px,92vw);height:auto;display:block;margin:0 auto}
+  .logo-svg path,.logo-svg line{
+    stroke:var(--fg);
+    stroke-width:11;
+    fill:none;
+    stroke-linecap:butt;
+    stroke-dasharray:26 13;
+    animation:draw 2.2s ease-out forwards, dashmove 40s linear 2.2s infinite;
+  }
+  @keyframes draw{from{stroke-dashoffset:900;opacity:.25}to{stroke-dashoffset:0;opacity:1}}
+  @keyframes dashmove{to{stroke-dashoffset:-780}}
+
+  .tagline{
+    margin-top:28px;
+    font-size:clamp(13px,2.2vw,16px);
+    letter-spacing:.28em;
+    color:var(--fg);
+    text-transform:uppercase;
+  }
+  .tagline .cursor{display:inline-block;width:.6em;background:var(--fg);animation:blink 1s steps(1) infinite}
+  .sub{
+    margin-top:14px;color:var(--dim);font-size:13px;letter-spacing:.12em;
+  }
+
+  .ascii-deco{
+    color:var(--faint);font-size:11px;line-height:1.35;margin:34px auto 0;
+    overflow:hidden;
+  }
+
+  /* ---------- rewards ---------- */
+  .section-label{
+    display:flex;align-items:center;gap:14px;
+    color:var(--dim);font-size:12px;letter-spacing:.3em;text-transform:uppercase;
+    margin:70px 0 26px;
+  }
+  .section-label::before,.section-label::after{
+    content:"";flex:1;border-top:1px dashed var(--faint);
+  }
+
+  .grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  }
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    border:1px dashed var(--dim);
+    padding:28px 22px 24px;
+    position:relative;
+    background:var(--bg);
+    transition:border-color .2s;
+  }
+  .card:hover{border-color:var(--fg)}
+  .card .corner{position:absolute;color:var(--dim);font-size:12px;line-height:1}
+  .card .tl{top:4px;left:6px}.card .tr{top:4px;right:6px}
+  .card .bl{bottom:4px;left:6px}.card .br{bottom:4px;right:6px}
+  .card h3{
+    font-size:11px;font-weight:400;letter-spacing:.25em;color:var(--dim);
+    text-transform:uppercase;margin-bottom:18px;
+  }
+  .val{
+    font-size:clamp(26px,4vw,34px);
+    font-weight:700;
+    font-style:italic;
+    letter-spacing:.02em;
+    word-break:break-all;
+  }
+  .val .unit{font-size:.45em;color:var(--dim);font-style:normal;letter-spacing:.2em;margin-left:6px}
+  .note{margin-top:14px;font-size:12px;color:var(--dim);letter-spacing:.05em;line-height:1.6}
+
+  .big-card{
+    grid-column:1 / -1;
+    text-align:center;
+    padding:44px 22px 40px;
+  }
+  .big-card .val{font-size:clamp(40px,8vw,72px)}
+  .big-card h3{margin-bottom:24px}
+
+  .explain{
+    margin-top:26px;
+    border:1px dashed var(--faint);
+    padding:20px 22px;
+    color:var(--dim);font-size:13px;line-height:1.8;letter-spacing:.03em;
+  }
+  .explain b{color:var(--fg)}
+
+  /* ---------- how it works ---------- */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:820px){.steps{grid-template-columns:1fr}}
+  .step{border-top:1px dashed var(--dim);padding-top:16px}
+  .step .n{font-style:italic;font-weight:700;font-size:22px}
+  .step p{margin-top:10px;font-size:13px;color:var(--dim);line-height:1.7}
+  .step p b{color:var(--fg)}
+
+  /* ---------- contract ---------- */
+  .contract{
+    margin-top:0;
+    border:1px dashed var(--dim);
+    padding:22px;
+    display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;
+  }
+  .addr{font-size:clamp(10px,1.6vw,14px);letter-spacing:.04em;word-break:break-all;color:var(--fg)}
+  .addr-label{font-size:11px;color:var(--dim);letter-spacing:.25em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .btns{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{
+    border:1px solid var(--fg);
+    background:var(--bg);color:var(--fg);
+    font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    padding:12px 20px;cursor:pointer;text-decoration:none;display:inline-block;
+    transition:all .15s;
+  }
+  .btn:hover{background:var(--fg);color:var(--bg)}
+  .btn.ghost{border-style:dashed;border-color:var(--dim);color:var(--dim)}
+  .btn.ghost:hover{border-color:var(--fg);color:var(--fg);background:var(--bg)}
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top:80px;border-top:1px dashed var(--faint);
+    padding:30px 0 40px;
+    color:var(--dim);font-size:11px;letter-spacing:.15em;
+    text-align:center;line-height:2;
+  }
+  footer a{color:var(--fg);text-decoration:none;border-bottom:1px dashed var(--dim)}
+  footer a:hover{border-bottom-style:solid}
+
+  .updated{font-size:11px;color:var(--faint);text-align:center;margin-top:18px;letter-spacing:.1em}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">/ A G I /<span class="slash"> — AMPHIBIAN GIGA INTELLIGENCE</span></div>
+    <div class="status"><span class="dot"></span><span id="live-label">LIVE&nbsp;·&nbsp;REWARDS&nbsp;IN&nbsp;NVDA</span></div>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="ticker-inner" id="ticker">
+    &nbsp;/ $AGI / PAIRED WITH <b>NVDA</b> / CREATOR FEES → HOLDERS / NOTHING TO CLAIM, PAYOUTS ARE PUSHED / 1,000,000,000 SUPPLY FIXED AT LAUNCH / 0% CREATOR TAX /
+    &nbsp;/ $AGI / PAIRED WITH <b>NVDA</b> / CREATOR FEES → HOLDERS / NOTHING TO CLAIM, PAYOUTS ARE PUSHED / 1,000,000,000 SUPPLY FIXED AT LAUNCH / 0% CREATOR TAX /
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="logo-svg" viewBox="0 0 660 260" aria-label="AGI">
+      <g transform="matrix(1,0,-0.28,1,72,0)">
+        <!-- A -->
+        <path d="M28 224 L98 36 L168 224"/>
+        <line x1="62" y1="158" x2="134" y2="158"/>
+        <!-- G -->
+        <path d="M368 36 L228 36 L228 224 L368 224 L368 148 L300 148"/>
+        <!-- I -->
+        <line x1="412" y1="36" x2="560" y2="36"/>
+        <line x1="486" y1="36" x2="486" y2="224"/>
+        <line x1="426" y1="224" x2="546" y2="224"/>
+      </g>
+    </svg>
+
+    <div class="tagline">AMPHIBIAN&nbsp;GIGA&nbsp;INTELLIGENCE<span class="cursor">&nbsp;</span></div>
+    <div class="sub">// the frog that pays you in NVDA //</div>
+
+    <pre class="ascii-deco">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+hold $AGI → creator fees sweep → distributor → NVDA lands in your wallet. no claim. no tax.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</pre>
+  </section>
+
+  <!-- REWARDS -->
+  <div class="section-label" id="rewards">REWARDS&nbsp;/&nbsp;NVDA</div>
+
+  <div class="grid">
+    <div class="card big-card">
+      <span class="corner tl">+</span><span class="corner tr">+</span><span class="corner bl">+</span><span class="corner br">+</span>
+      <h3>Total creator fees earned by $AGI</h3>
+      <div class="val"><span id="earned">—</span><span class="unit">NVDA</span></div>
+      <div class="note">across <span id="sweeps">—</span> sweeps · routed to holders through the fee distributor</div>
+    </div>
+
+    <div class="card">
+      <span class="corner tl">+</span><span class="corner tr">+</span><span class="corner bl">+</span><span class="corner br">+</span>
+      <h3>Paid to holders</h3>
+      <div class="val"><span id="distributed">—</span><span class="unit">NVDA</span></div>
+      <div class="note">across <span id="epochs">—</span> distribution(s) · pushed directly to holder wallets</div>
+    </div>
+
+    <div class="card">
+      <span class="corner tl">+</span><span class="corner tr">+</span><span class="corner bl">+</span><span class="corner br">+</span>
+      <h3>In the pot / next distribution</h3>
+      <div class="val"><span id="pot">—</span><span class="unit">NVDA</span></div>
+      <div class="note">accumulating now · drops automatically at the next epoch</div>
+    </div>
+
+    <div class="card">
+      <span class="corner tl">+</span><span class="corner tr">+</span><span class="corner bl">+</span><span class="corner br">+</span>
+      <h3>Current epoch pool</h3>
+      <div class="val"><span id="epochpool">—</span><span class="unit">NVDA</span></div>
+      <div class="note">total NVDA allocated to the active reward epoch</div>
+    </div>
+  </div>
+
+  <div class="explain">
+    <b>How rewards work:</b> every trade on $AGI generates creator fees in <b>NVDA</b>.
+    There is <b>no creator claim</b> — 100% of those fees route to $AGI holders through the on-chain fee
+    distributor. Payouts are <b>pushed to holder wallets automatically</b>, so there is nothing to claim.
+    Just hold the frog.
+  </div>
+
+  <div class="updated" id="updated">fetching on-chain data…</div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section-label">PROTOCOL</div>
+  <div class="steps">
+    <div class="step">
+      <div class="n">/01</div>
+      <p><b>TRADE.</b> Every buy and sell of $AGI on the pons bonding curve generates fees, denominated in NVDA.</p>
+    </div>
+    <div class="step">
+      <div class="n">/02</div>
+      <p><b>SWEEP.</b> Fees are swept from escrow into the distributor contract. No creator wallet. 0% creator tax.</p>
+    </div>
+    <div class="step">
+      <div class="n">/03</div>
+      <p><b>RECEIVE.</b> NVDA is pushed straight to holder wallets each epoch. No claiming, no staking, no dashboard-clicking.</p>
+    </div>
+  </div>
+
+  <!-- CONTRACT -->
+  <div class="section-label">CONTRACT</div>
+  <div class="contract">
+    <div>
+      <span class="addr-label">$AGI token address</span>
+      <span class="addr" id="addr">0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9</span>
+    </div>
+    <div class="btns">
+      <button class="btn ghost" id="copy-btn" onclick="copyAddr()">COPY</button>
+      <a class="btn" href="https://www.ponsfamily.com/launchpad/0x4b516cf6e96f9ac43207462ea389d820bcfd4dc9" target="_blank" rel="noopener">BUY ON PONS ↗</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    / A G I / — AMPHIBIAN GIGA INTELLIGENCE<br>
+    supply 1,000,000,000 · fixed at launch · paired with NVDA ·
+    <a href="https://www.ponsfamily.com/launchpad/0x4b516cf6e96f9ac43207462ea389d820bcfd4dc9" target="_blank" rel="noopener">pons launchpad</a><br>
+    <span style="color:var(--faint)">not financial advice. it's a frog.</span>
+  </div>
+</footer>
+
+<script>
+const TOKEN = "0x4b516cf6e96f9ac43207462ea389d820bcfd4dc9";
+const BASE  = "https://www.ponsfamily.com/api/pons-v2-market/" + TOKEN;
+
+// last known values (baked in as fallback if all fetch routes fail)
+const FALLBACK = {
+  earned: 3.570606, sweeps: 19,
+  distributed: 0, epochs: 1,
+  pot: 0.052167, epochpool: 2.633276
+};
+
+const fromWei = s => Number(BigInt(s) / 1000000000000n) / 1e9; // 18 dec → number, safe
+const fmt = (n, dp) => n.toLocaleString("en-US", {minimumFractionDigits: dp, maximumFractionDigits: dp});
+
+async function fetchJSON(url){
+  // direct first, then CORS proxy
+  const routes = [
+    url,
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(url)
+  ];
+  for (const r of routes){
+    try{
+      const res = await fetch(r, {cache:"no-store", signal: AbortSignal.timeout(8000)});
+      if (res.ok) return await res.json();
+    }catch(e){ /* next route */ }
+  }
+  throw new Error("all routes failed");
+}
+
+const state = {};
+function animateTo(id, target, dp){
+  const el = document.getElementById(id);
+  const from = state[id] ?? 0;
+  state[id] = target;
+  if (document.hidden){ el.textContent = fmt(target, dp); return; }
+  const t0 = performance.now(), dur = 1400;
+  function tick(t){
+    const p = Math.min((t - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(from + (target - from) * e, dp);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function render(d){
+  animateTo("earned",      d.earned,    6);
+  animateTo("distributed", d.distributed, 6);
+  animateTo("pot",         d.pot,       6);
+  animateTo("epochpool",   d.epochpool, 6);
+  document.getElementById("sweeps").textContent = d.sweeps;
+  document.getElementById("epochs").textContent = d.epochs;
+}
+
+function renderFrom(fees, dist){
+  render({
+    earned:      fromWei(fees.earnedForToken),
+    sweeps:      fees.sweepCount,
+    distributed: fromWei(dist.distributedQuote),
+    epochs:      dist.epochCount,
+    pot:         fromWei(dist.unallocatedQuote),
+    epochpool:   fromWei(dist.latestEpoch?.quoteTotal ?? "0")
+  });
+}
+
+async function load(){
+  // 1) live API (direct or via proxy)
+  try{
+    const [fees, dist] = await Promise.all([
+      fetchJSON(BASE + "/creator-fees"),
+      fetchJSON(BASE + "/distributor")
+    ]);
+    renderFrom(fees, dist);
+    document.getElementById("updated").textContent =
+      "live on-chain data · updated " + new Date().toLocaleTimeString() + " · refreshes every 60s";
+    return;
+  }catch(e){ /* fall through */ }
+
+  // 2) data.json committed by the GitHub Action (same-origin, refreshed every ~15 min)
+  try{
+    const snap = await fetch("./data.json?t=" + Date.now(), {cache:"no-store"}).then(r=>r.json());
+    renderFrom(snap.fees, snap.dist);
+    document.getElementById("updated").textContent =
+      "on-chain snapshot · " + new Date(snap.updatedAt).toLocaleString() + " · auto-refreshed every 15 min";
+    return;
+  }catch(e){ /* fall through */ }
+
+  // 3) baked-in last known values
+  render(FALLBACK);
+  document.getElementById("updated").textContent =
+    "showing last known values · live feed unreachable from this network";
+}
+
+function copyAddr(){
+  navigator.clipboard.writeText("0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9").then(()=>{
+    const b = document.getElementById("copy-btn");
+    b.textContent = "COPIED";
+    setTimeout(()=>{ b.textContent = "COPY"; }, 1500);
+  });
+}
+
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>
