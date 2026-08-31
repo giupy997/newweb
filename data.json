@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-31T06:45:53Z",
+  "updatedAt": "2026-08-31T14:35:25Z",
   "fees": {
     "token": "0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9",
     "feeEscrow": "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
@@ -11,9 +11,9 @@
       "isNative": false
     },
     "earnedForToken": null,
-    "claimableForWallet": "0",
+    "claimableForWallet": "5249200808197485",
     "sweepCount": 0,
-    "nothingToClaim": true
+    "nothingToClaim": false
   },
   "dist": {
     "state": "active",
