@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01T08:38:35Z",
+  "updatedAt": "2026-09-01T13:40:44Z",
   "fees": {
     "token": "0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9",
     "feeEscrow": "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
@@ -21,13 +21,13 @@
     "unallocatedQuote": "48464569484526980",
     "unallocatedCoin": "0",
     "epochCount": 7,
-    "distributedQuote": "9789725858480245418",
+    "distributedQuote": "9796885841667095566",
     "distributedCoin": "0",
     "latestEpoch": {
       "id": 6,
       "quoteTotal": "1308584401335842802",
       "coinTotal": "0",
-      "quoteClaimed": "1200175362613796413",
+      "quoteClaimed": "1205179433753133840",
       "coinClaimed": "0",
       "expiresAt": 1796019392,
       "rolledOver": false
