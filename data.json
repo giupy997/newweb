@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-03T13:53:25Z",
+  "updatedAt": "2026-09-03T19:58:18Z",
   "fees": {
     "token": "0x4B516cf6E96F9AC43207462ea389d820bCfD4dc9",
     "feeEscrow": "0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e",
@@ -10,26 +10,26 @@
       "decimals": 18,
       "isNative": false
     },
-    "earnedForToken": "11126609099009937381",
+    "earnedForToken": "12144871651839271651",
     "claimableForWallet": "0",
-    "sweepCount": 117,
+    "sweepCount": 118,
     "nothingToClaim": true
   },
   "dist": {
     "state": "active",
     "distributor": "0xB924283213A0457289d85B8Fd7C11a18Ab74df9f",
-    "unallocatedQuote": "16152079853951083",
+    "unallocatedQuote": "26428441543966749",
     "unallocatedCoin": "0",
-    "epochCount": 14,
-    "distributedQuote": "9852484831799808227",
+    "epochCount": 19,
+    "distributedQuote": "11787042301986564815",
     "distributedCoin": "0",
     "latestEpoch": {
-      "id": 13,
-      "quoteTotal": "2188537235127191",
+      "id": 18,
+      "quoteTotal": "2078593393373005",
       "coinTotal": "0",
-      "quoteClaimed": "2188537235127191",
+      "quoteClaimed": "2078593393373005",
       "coinClaimed": "0",
-      "expiresAt": 1796161894,
+      "expiresAt": 1796234121,
       "rolledOver": false
     }
   }
